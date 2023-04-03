@@ -40,6 +40,7 @@ import kotlin.math.absoluteValue
 enum class EverYouthScreen(){
     LoginPage,
     MainMenuPage,
+    ProfilePage
 }
 
 @Composable
@@ -50,9 +51,11 @@ fun EverYouthApp(){
             LoginPage(navController = navController)
         }
         composable("${EverYouthScreen.MainMenuPage.name}/{unameInput}") { backStackEntry ->
-            MainMenuPage(username = backStackEntry.arguments?.getString("unameInput") ?: "")
+            MainMenuPage(username = backStackEntry.arguments?.getString("unameInput") ?: "", onProfileClick = { navController.navigate(EverYouthScreen.ProfilePage.name)})
         }
-
+        composable(EverYouthScreen.ProfilePage.name){
+            ProfilePage()
+        }
     }
 }
 
@@ -87,7 +90,6 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController) {
         TOSCaution()
 
         LoginButton(onClick = { navController.navigate("${EverYouthScreen.MainMenuPage.name}/$unameInput")})
-
     }
 }
 
@@ -165,7 +167,7 @@ fun LoginButton(onClick: () -> Unit){
 }
 
 @Composable
-fun MainMenuPage(modifier: Modifier = Modifier, username: String){
+fun MainMenuPage(modifier: Modifier = Modifier, username: String, onProfileClick: () -> Unit){
     val imageScrollState = rememberLazyListState()
     val buttonScrollState = rememberLazyListState()
     val images = listOf(
@@ -189,10 +191,11 @@ fun MainMenuPage(modifier: Modifier = Modifier, username: String){
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = onProfileClick,
                 modifier = Modifier.size(40.dp)
             ) {
                 // Profile picture
+                Text(text = "P")
             }
             Text(
                 text = "Welcome $username!",
@@ -306,6 +309,65 @@ fun ScrollIndicator(
         }
     }
 }
+
+@Composable
+fun ProfilePage(){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text (text = "Profile configuration is not yet available")
+    }
+}
+
+@Composable
+fun SearchPage(){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text (text = "Search is not yet available")
+    }
+}
+
+@Composable
+fun FaceScannerPage(){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text (text = "Face Scanner is not yet available")
+    }
+}
+
+@Composable
+fun FeedsPage(){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text (text = "Feeds is not yet available")
+    }
+}
+
+@Composable
+fun ShortsPage(){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text (text = "Shorts is not yet available")
+    }
+}
+
+
+
+
 
 
 
