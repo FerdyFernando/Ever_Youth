@@ -33,7 +33,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlin.math.absoluteValue
 
 
 enum class EverYouthScreen(){
@@ -217,6 +218,8 @@ fun MainMenuPage(modifier: Modifier = Modifier, username: String){
 
 @Composable
 fun ImageSection(images: List<Int>, scrollState: LazyListState) {
+    val firstVisibleItemScrollState = remember { mutableStateOf(0) }
+
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
@@ -238,13 +241,18 @@ fun ImageSection(images: List<Int>, scrollState: LazyListState) {
                 )
             }
         }
-        DotsIndicator(
+        ScrollIndicator(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 16.dp),
-            currentIndex = scrollState.firstVisibleItemIndex,
-            count = images.size,
+            scrollState = firstVisibleItemScrollState.value,
+            itemCount = images.size,
         )
+        LaunchedEffect(scrollState) {
+            snapshotFlow { scrollState.firstVisibleItemIndex }
+                .distinctUntilChanged()
+                .collect { firstVisibleItemScrollState.value = it }
+        }
     }
 }
 
@@ -269,12 +277,13 @@ fun ButtonSection(scrollState: LazyListState) {
 
 
 @Composable
-fun DotsIndicator(
+fun ScrollIndicator(
     modifier: Modifier = Modifier,
-    currentIndex: Int,
-    count: Int,
-    radius: Dp = 3.dp,
-    spacing: Dp = 2.dp,
+    scrollState: Int,
+    itemCount: Int,
+    indicatorWidth: Dp = 12.dp,
+    indicatorHeight: Dp = 4.dp,
+    indicatorPadding: Dp = 4.dp,
     indicatorColor: Color = Color.White,
     inactiveIndicatorColor: Color = Color.Gray,
 ) {
@@ -282,16 +291,16 @@ fun DotsIndicator(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = radius)
+            modifier = Modifier.padding(bottom = indicatorHeight)
         ) {
-            for (i in 0 until count) {
-                val color = if (i == currentIndex) indicatorColor else inactiveIndicatorColor
+            for (i in 0 until itemCount) {
+                val color = if (scrollState.absoluteValue == i) indicatorColor else inactiveIndicatorColor
                 Box(
                     modifier = Modifier
-                        .size(radius * 2)
-                        .clip(CircleShape)
-                        .background(color)
-                        .padding(spacing / 2)
+                        .width(indicatorWidth)
+                        .height(indicatorHeight)
+                        .background(color, CircleShape)
+                        .padding(indicatorPadding)
                 )
             }
         }
